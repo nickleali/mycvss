@@ -18,3 +18,9 @@ Environmental mitigations
 Network -> Adjacent
 
 
+How to include Ben's library
+
+Install on localhost
+pip install git+https://github.com/[repo owner]/[repo]@[branch name]
+
+pip install git+https://github.com/bjedwards/cvss4py
