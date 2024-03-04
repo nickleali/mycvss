@@ -1,9 +1,11 @@
 from fastapi import Depends, FastAPI
 import kev_checkapi
+import score_checkapi
 
 app = FastAPI()
 
 app.include_router(kev_checkapi.router, prefix="/kev_checkapi")
+app.include_router(score_checkapi.router, prefix="/score_checkapi")
 
 @app.get("/mycvss/")
 async def read_string(cve: str | None = None, vector_string: str | None = None):
