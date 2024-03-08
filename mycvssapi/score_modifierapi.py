@@ -27,6 +27,13 @@ def scoreMod(vectorString: str, cve: str):
     #modify vector string accordingly based on kevState
     vectorString += '/E:A' if kevState == True else '/E:U'
 
+    # check score for AV:N and if found rewrite string to modify environmental metrics
+
+    if vectorString.find('AV:N') == -1:
+        vectorString = vectorString
+    else:
+        vectorString += '/MAV:A'
+
     #update our final vector string check
     score_check_url = "http://127.0.0.1:8000/score_checkapi/?vector=" + vectorString
 
