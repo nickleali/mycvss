@@ -15,18 +15,17 @@
     
     CVSS v4.0 metric string: <input type="text" name="base-score" id="base-score"> <br>
     CVE: <input type="text" name="cve" id="cve"><br>
-    
+    <!--
     <p>Check my CVSS score.</p>
     <button onclick="returnScore(document.getElementById('base-score').value)">Score!</button>
-    <p>Your score is:</p>
-    <div id="score"></div>
     
     <p>Check my CVE status.</p>
     <button onclick="kevCheck(document.getElementById('cve').value)">KEV Check!</button>
     <p>Your CVE state is: <div id="kevState"></div></p>
-
+    --!>
     <p>Evaluate my CVE.</p>
-    <button onclick="envScore(document.getElementById('cve').value, document.getElementById('base-score').value)">Magic check!</button>
+    <button onclick="returnScore(document.getElementById('base-score').value);envScore(document.getElementById('cve').value, document.getElementById('base-score').value)">Magic check!</button>
+    <p>Your base score is:<div id="score"></div></p>
     <p>Your modified CVSS score is: <div id="magicNumber"></div></p>   
 
     </body>
