@@ -32,7 +32,7 @@ def cveState(searchCVE):
         print("The CVE is not in KEV.")
         cveFind = False
     else:
-        print("The CVE is in KEV near", cveFind)
+        print("The CVE was found in KEV near this index", cveFind)
         cveFind = True
 
     return cveFind
