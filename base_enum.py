@@ -1,3 +1,6 @@
+# This script will output all valid CVSS v4.0 vector strings.
+# https://www.first.org/cvss/
+
 import itertools
 
 baseMetrics = [

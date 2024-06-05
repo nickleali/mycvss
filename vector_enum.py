@@ -1,3 +1,6 @@
+# This script will output valid CVSS v4.0 vector base and threat strings with single environmental metrics.
+# https://www.first.org/cvss/
+
 import itertools
 import time
 
@@ -50,8 +53,8 @@ for element in itertools.product(*baseAndThreatMetrics):
 		str = str + item
 	print(str)
 	# time.sleep(1)
-	# get mav to msa values
-	for x in range(0, 14):
+	# add on mav through mva values
+	for x in range(3, 10):
 		currMetric = environmentalMetrics[x]
 		# print(currMetric)
 		# Trying to iterate through all strings and then replace the modified value
