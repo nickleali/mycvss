@@ -19,8 +19,8 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
     Attack Requirements -- If AC:H, then set AT:P 
     User Interaction -- If UI:R, then set UI:P
     Privileges Required -- directly translate
-    
-    
+    Scope -- Ignore for now
+    Impact Metrics -- Convert CIA to VC / VI / VA, ignore subsystem    
     
     '''
     
@@ -67,16 +67,16 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
         v4_string = v4_string + "/VC:H"
 
       # integrity impact metric processing
-      if "I:N" in line:
+      if "/I:N" in line:
         v4_string = v4_string + "/VI:N"
-      elif "I:L" in line:
+      elif "/I:L" in line:
         v4_string = v4_string + "/VI:L"
       else:
         v4_string = v4_string + "/VI:H"
 
-      if "A:N" in line:
+      if "/A:N" in line:
         v4_string = v4_string + "/VA:N"
-      elif "A:L" in line:
+      elif "/A:L" in line:
         v4_string = v4_string + "/VA:L"
       else:
         v4_string = v4_string + "/VA:H"
@@ -84,6 +84,13 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
       # we don't care about subsystem impacts, so make it simple and add on NNN
       
       v4_string = v4_string + "/SC:N/SI:N/SA:N"
+      
+      # output the derived score in v4_string
+      
+      print(v4_string)
+      
+    else:
+      print("Scope detected, skipping.")
 
     # combine the final vector string with the derived v4_string for the later v4 score check
 
@@ -97,5 +104,5 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
     # Write the vector and score to the destination file
     # destination.write(calc_value + " " + line + "\n")
     # destination.write(line + "\n")
-    #print(line)
-    #print(v4_string)
+    # print(line)
+    # print(v4_string)
