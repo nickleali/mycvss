@@ -27,7 +27,4 @@ for element in itertools.product(*baseThreatMetrics):
     str = ''
     for item in element:
         str = str + item
-    # print(str)
-    count = count + 1
-
-print(count)
+    print(str)
