@@ -18,7 +18,7 @@ baseThreatMetrics = [
     ["SI:H/", "SI:L/", "SI:N/"],
     ["SA:H/", "SA:L/", "SA:N/"],
     # Threat (1 metric)
-    ["E:X/", "E:A/", "E:P/", "E:U/"],
+    ["E:X", "E:A", "E:P", "E:U"],
 ]
 
 count = 0
