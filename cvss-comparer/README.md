@@ -21,3 +21,7 @@ The overall average change between v3.1 and v4.0.
 ## Range Distance
 
 The overall distance of changes, ie, the perceived inaccuracy.
+
+# Possible vector enrichment
+
+Check the CVEs for KEV, and modify other environmental variables.
