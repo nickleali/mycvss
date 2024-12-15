@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import objectpath
 import re
-import cvss
+from cvss import CVSS3, CVSS4
 
 """
 Definitions for various files we're working with.
@@ -35,18 +35,22 @@ def get_vector(vector, version):
   """
 
   match = re.search(vector, version)
-  if version == "v3.1":
+  match = str(match)
+  print("This is the match:" + match)
+  if version == "3.1":
+      print("Checking for v3.1 score.")
       if match:
-          start_index = match.end()
+          start_index = 17
           end_index = start_index + 44
-          return text[start_index:end_index]
+          return vector[start_index:end_index]
       else:
           return None
-  elif version == 'v4.0':
+  elif version == "4.0":
       if match:
-          start_index = match.end()
-          end_index = start_index + 64
-          return text[start_index:end_index]
+          print("Checking for v4.0 score.")
+          start_index = 17
+          end_index = start_index + 63
+          return vector[start_index:end_index]
       else:
           return None
   else:
@@ -64,39 +68,50 @@ for fname in result:
         vector_lines = []
         for i in range(len(lines)):
             # print(lines)
-            if "CVSS:4.0" in lines[i]:
-                print('Found CVSS vectors in file %s' % fname)
-                # Get clean v4 vector
-                inputCheck = str(lines[i])
-                v4Vector = get_vector(inputCheck, "v4.0")
+            try:
+                if "CVSS:4.0" in lines[i]:
+                    print('Found CVSS vectors in file %s' % fname)
+                    # Get clean v4 vector
+                    inputCheck = str(lines[i])
+                    inputCheck = inputCheck.strip()
+                    print("This is the input to check:" + inputCheck)
+                    v4Vector = get_vector(inputCheck, "4.0")
+                    print("This is the returned v4.0 vector" + v4Vector)
 
-                # write vector to file
-                # vectors_write.write(v4Vector)
+                    # write vector to file
+                    # vectors_write.write(v4Vector)
 
-                # store whole line in local array
-                vector_lines.append(lines[i].strip("\n"))
+                    # store whole line in local array
+                    vector_lines.append(lines[i].strip("\n"))
 
-                myScore = CVSS4(v4Vector)
-                myScore = str(myScore.base_score)
+                    myScore = CVSS4(v4Vector)
+                    myScore = str(myScore.base_score)
 
-                # Write all the v4.0 stuff out.
-                data_result.write(fname + "\n" + myScore + "\n")
+                    # Write all the v4.0 stuff out.
+                    cveName = str(fname)
+                    data_result.write(cveName + "\n" + myScore + "\n")
 
-                #print(vector_lines)
-                for i in range(len(lines)):
-                    if "CVSS:3.1" in lines[i]:
-                        # call to get a clean vector
-                        inputCheck = str(lines[i])
-                        v3Vector = get_vector(inputCheck, "v3.1")
+                    #print(vector_lines)
+                    for i in range(len(lines)):
+                        if "CVSS:3.1" in lines[i]:
+                            # call to get a clean vector
+                            inputCheck = str(lines[i])
+                            inputCheck = inputCheck.strip()
+                            print("This is the input to check:" + inputCheck)
+                            v3Vector = get_vector(inputCheck, "3.1")
+                            print("This is the returned v3.1 vector" + v4Vector)
+                       
+                            # get the score of this vector
+                            myScore = CVSS3(v3Vector)
+                            myScore = str(myScore.base_score)
 
-                        # get the score of this vector
-                        myScore = CVSS3(v3Vector)
-                        myScore = str(myScore.base_score)
+                            # Just in case store this in the array
+                            vector_lines.append(lines[i].strip("\n"))
 
-                        # Just in case store this in the array
-                        vector_lines.append(lines[i].strip("\n"))
-
-                        # Write all the v3.1 stuff out.
-                        data_result.write(myScore + "\n")
+                            # Write all the v3.1 stuff out.
+                            data_result.write(myScore + "\n")
+            except:
+                pass
+            
         f.close()
         # print(vector_lines)
