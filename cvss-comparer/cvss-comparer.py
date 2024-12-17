@@ -62,6 +62,38 @@ def get_vector(vector, version):
   else:
       return "Invalid CVSS vector version"
 
+def get_cna(cve_file):
+  """Searches a CVE program json file and returns the value of the assignerShortName field.
+
+  Args:
+    cve_file: the file path to search for the pattern.
+
+  Returns:
+    The value of the assignerShortName field, or None if the pattern is not found.
+  """
+
+  f = open(cve_file)
+  lines = f.readlines()
+
+  for i in range(len(lines)):
+      inputCheck = str(lines[i])
+      inputCheck = inputCheck.strip()
+      # print("This is the line to check:" + inputCheck)
+      try: 
+          match = re.search("assignerShortName", inputCheck)
+          match = str(match)
+          if match:
+              start_index = inputCheck.index("assignerShortName")
+              end_index = inputCheck.index("\",")
+              assignerName = inputCheck[start_index:end_index]
+              # print("We found the assigner's name:" + assignerName + "***********")
+              return assignerName
+          else:
+              return False 
+              # print("name not found")
+      except:
+          pass
+
 # return v4.0 and then corresponding v3.1 from a file, store in an array
 # JSON format sorts in descending order, so v4.0 is always first
 
@@ -85,6 +117,9 @@ for fname in result:
                     #print("This is the input to check:" + inputCheck)
                     v4Vector = get_vector(inputCheck, "4.0")
                     #print("This is the returned v4.0 vector" + v4Vector)
+                    
+                    vendorName = get_cna(fname)
+                    print("This is the assigner's name: " + vendorName)
 
                     # write vector to file
                     # vectors_write.write(v4Vector)
@@ -100,8 +135,8 @@ for fname in result:
                     cve_start_index = cveName.index("CVE-")
                     cve_end_index = cveName.index(".")
                     cveName = cveName[cve_start_index:cve_end_index]
-                    data_result.write(cveName + "\n" + "CVSS v4.0 vector: " + v4Vector + "\n" + "CVSS v4.0 score: " + cvssv4Score + "\n")
-                    csv_result.write(cveName + ", " + v4Vector + ", " + cvssv4Score + ", " + "\n")
+                    data_result.write(cveName + "\n" + vendorName + "\n" + "CVSS v4.0 vector: " + v4Vector + "\n" + "CVSS v4.0 score: " + cvssv4Score + "\n")
+                    # csv_result.write(cveName + ", " + v4Vector + ", " + cvssv4Score + ", " + "\n")
 
                     #print(vector_lines)
                     for i in range(len(lines)):
@@ -122,7 +157,8 @@ for fname in result:
 
                             # Write all the v3.1 stuff out.
                             data_result.write("CVSS v3.1 vector: " + v3Vector + "\n" + "CVSS v3.1 score: " + cvssv3Score + "\n")
-                            csv_result.write(v3Vector + ", " + cvssv3Score + "\n")
+                            # Write all the stuff out, this is only CVEs with both v3.1 and v4.0 scores
+                            csv_result.write(cveName + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
             except:
                 pass
             
