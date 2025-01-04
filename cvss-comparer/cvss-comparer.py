@@ -10,12 +10,18 @@ import objectpath
 import re
 import numpy as np
 from cvss import CVSS3, CVSS4
+import matplotlib.pyplot as plt
+
+#import our functions in comfunctions.py
+
+from comfunctions import *
 
 """
 Set the modes for output:
 
 Set outputCSV to true for CSV output.
 Set ouputAllData to true to get all the output of found vectors and scores.
+Set vendorCheck to true to get vendor results
 
 """
 
@@ -27,7 +33,10 @@ data_result stores everything we got: v4.0 and v3.1 vectors, their derived score
 data_csv is a CSV format output of everything
 """
 
+vendorCheck = False
+
 alldata_file = "data_result"
+ouputAllData = True
 
 csv_file = "data_csv"
 outputCSV = True
@@ -38,95 +47,12 @@ csv_result = open(csv_file, 'w')
 csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4.0 Score" + ", " + "CVSS v3 Vector String" + ", " + "CVSS v3.1 Score")
 
 # Set the list of all the files to check here
-result = list(Path("/home/kali/cvelistV5/cves/2024/1xxx").rglob("*.json"))
+result = list(Path("/home/kali/cvelistV5/cves/2024").rglob("*.json"))
 
 # Creating our numpy array for the derived scores
 # This is a 2D array, first column v3.1, second column v4.0
 
 scoresArray = np.array([[0, 0], [1, 1]])
-
-def get_vector(vector, version):
-  """Searches a string for a CVSS vector and returns the vector string only.
-
-  Args:
-    vector: The dirty vector text.
-    version: The version of CVSS vector to search for.
-
-  Returns:
-    The CVSS vector, or None if the pattern is not found.
-  """
-
-  match = re.search(vector, version)
-  match = str(match)
-  if version == "3.1":
-      # print("Checking for v3.1 score.")
-      if match:
-          start_index = vector.index("CVSS:3.1")
-          end_index = start_index + 44
-          return vector[start_index:end_index]
-      else:
-          return None
-  elif version == "4.0":
-      if match:
-          #print("Checking for v4.0 score.")
-          start_index = vector.index("CVSS:4.0")
-          end_index = start_index + 63
-          return vector[start_index:end_index]
-      else:
-          return None
-  else:
-      return "Invalid CVSS vector version"
-
-def get_cna(cve_file):
-  """Searches a CVE program json file and returns the value of the assignerShortName field.
-
-  Args:
-    cve_file: the file path to search for the pattern.
-
-  Returns:
-    The value of the assignerShortName field, or None if the pattern is not found.
-  """
-
-  f = open(cve_file)
-  lines = f.readlines()
-
-  for i in range(len(lines)):
-      inputCheck = str(lines[i])
-      inputCheck = inputCheck.strip()
-      # print("This is the line to check:" + inputCheck)
-      try: 
-          match = re.search("assignerShortName", inputCheck)
-          match = str(match)
-          if match:
-              start_index = inputCheck.index("assignerShortName")
-              end_index = inputCheck.index("\",")
-              assignerName = inputCheck[start_index:end_index]
-              # print("We found the assigner's name:" + assignerName + "***********")
-              return assignerName
-          else:
-              return False 
-              # print("name not found")
-      except:
-          pass
-
-def average_difference(arr):
-  """
-  Calculates the average between elements of a 2D array.
-
-  Args:
-    arr: A 2D NumPy array.
-
-  Returns:
-    The average between elements.
-  """
-
-  # Calculate the difference between elements and store in a new array
-  allDiffs = np.diff(arr)
-
-  # Calculate the average difference
-  avg_diff = np.mean(allDiffs)
-
-  return avg_diff
 
 # return v4.0 and then corresponding v3.1 from a file, store in an array
 # JSON format sorts in descending order, so v4.0 is always first
@@ -142,7 +68,7 @@ for fname in result:
             # print(lines)
             try:
                 if "CVSS:4.0" in lines[i]:
-                    print('Found CVSS vectors in file %s' % fname)
+                    # print('Found CVSS vectors in file %s' % fname)
                     # Get clean v4 vector
                     inputCheck = str(lines[i])
                     inputCheck = inputCheck.strip()
@@ -151,7 +77,8 @@ for fname in result:
                     #print("This is the returned v4.0 vector" + v4Vector)
                     
                     vendorName = get_cna(fname)
-                    print("This is the assigner's name: " + vendorName)
+                    if vendorCheck:
+                        print("This is the assigner's name: " + vendorName)
 
                     # write vector to file
                     # vectors_write.write(v4Vector)
@@ -167,7 +94,8 @@ for fname in result:
                     cve_start_index = cveName.index("CVE-")
                     cve_end_index = cveName.index(".")
                     cveName = cveName[cve_start_index:cve_end_index]
-                    data_result.write(cveName + "\n" + vendorName + "\n" + "CVSS v4.0 vector: " + v4Vector + "\n" + "CVSS v4.0 score: " + cvssv4Score + "\n")
+                    if ouputAllData:
+                        data_result.write(cveName + "\n" + vendorName + "\n" + "CVSS v4.0 vector: " + v4Vector + "\n" + "CVSS v4.0 score: " + cvssv4Score + "\n")
                     # csv_result.write(cveName + ", " + v4Vector + ", " + cvssv4Score + ", " + "\n")
 
                     #print(vector_lines)
@@ -188,7 +116,8 @@ for fname in result:
                             vector_lines.append(lines[i].strip("\n"))
 
                             # Write all the v3.1 stuff out.
-                            data_result.write("CVSS v3.1 vector: " + v3Vector + "\n" + "CVSS v3.1 score: " + cvssv3Score + "\n")
+                            if ouputAllData:
+                                data_result.write("CVSS v3.1 vector: " + v3Vector + "\n" + "CVSS v3.1 score: " + cvssv3Score + "\n")
                             # Write all the stuff out, this is only CVEs with both v3.1 and v4.0 scores
 
                             if outputCSV:
@@ -205,8 +134,17 @@ for fname in result:
 
         # print the output of the array just to check what we got
 
-        print("This is the output of the array:" + str(scoresArray))
+        # print("This is the output of the array:" + str(scoresArray))
 
+"""
+Write code segment to search not a set of files but a file itself for strings and score them
+
+So that it will also work with a single file, csv or whatever
+
+Code switch or something to detect usage
+
+
+"""
 
 """
 Statistical analysis of the found data
@@ -237,7 +175,21 @@ Numpy ndarray
 
 # Let's try some stats
 
+# The whole array
+
+print(scoresArray)
+
 # Get the mean of the array
 
 print("This is the average between v3.1 and v4.0 scores for the calculated ranges:")
 print(str(average_difference(scoresArray)))
+
+# Get the average change, the mode
+
+print("This is the most common change for the calculated ranges:")
+print(str(mode_difference(scoresArray)))
+
+# Get the whole set of changes, as in, each unique difference
+
+print("This is the histogram of the differences")
+plt.show(create_histogram(scoresArray))
