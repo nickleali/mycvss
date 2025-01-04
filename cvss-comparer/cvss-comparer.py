@@ -171,9 +171,12 @@ structured array of tuples, matching v3.1 and v4.0 scores
 
 Numpy ndarray
 
-"""
+Classification of vulnerabilities
+- look at counts of CWEs and relate those to the differences in scoring
+-- did the type of vulnerabilities each year influence the overall scoring changes?
 
-# Let's try some stats
+
+# Basic stats
 
 # The whole array
 
@@ -193,3 +196,36 @@ print(str(mode_difference(scoresArray)))
 
 print("This is the histogram of the differences")
 plt.show(create_histogram(scoresArray))
+"""
+
+# attempt at main program loop
+# rework using input()
+
+print("Analysis complete. Select the following options for output.")
+print("Press the d key for all the raw data found.")
+print("Press the a key for the average of the differences.")
+print("Press the m key for the mode of the differences.")
+print("Press the h key for a histogram of the found differences.")
+print("Press any other key to quit.")
+
+while True:
+
+  # Let's try some stats
+
+    operationInput = input("Enter your option: ")
+
+    if operationInput == "d":
+        print(scoresArray)
+    if operationInput == "a":
+        # Get the mean of the array
+        print("This is the average between v3.1 and v4.0 scores for the calculated ranges:")
+        print(str(average_difference(scoresArray)))
+    if operationInput == "h":
+        print("This is the histogram of the differences")
+        create_histogram(scoresArray)
+    if operationInput == "m":
+        # Get the average change, the mode
+        print("This is the most common change for the calculated ranges:")
+        print(str(mode_difference(scoresArray)))
+    if operationInput == "q":
+        break
