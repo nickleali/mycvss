@@ -51,7 +51,7 @@ csv_result = open(csv_file, 'w')
 csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4.0 Score" + ", " + "CVSS v3 Vector String" + ", " + "CVSS v3.1 Score")
 
 # Set the list of all the files to check here
-result = list(Path("/home/kali/cvelistV5/cves/2024").rglob("*.json"))
+result = list(Path("/tmp/cvelistV5/cves/2024").rglob("*.json"))
 
 # Set the path of the CSV file to check here
 fileCSV = Path("/home/kali/data.csv")
@@ -186,6 +186,8 @@ print("Analysis complete. Select the following options for output.")
 print("Press the d key for all the raw data found.")
 print("Press the a key for the average of the differences.")
 print("Press the m key for the mode of the differences.")
+print("Press the r key for the range of the differences.")
+print("Press the l key for a histogram of all found CVSS scores.")
 print("Press the h key for a histogram of the found differences.")
 print("Press any other key to quit.")
 
@@ -204,10 +206,16 @@ while True:
     if operationInput == "h":
         print("This is the histogram of the differences")
         create_histogram(scoresArray)
+    if operationInput == "r":
+        # Get the average change, the mode
+        print("This is the range of all changes:" + determine_ranges(scoresArray))
     if operationInput == "m":
         # Get the average change, the mode
         print("This is the most common change for the calculated ranges:")
         print(str(mode_difference(scoresArray)))
+    if operationInput == "l":
+        # Output histogram of all found CVSS data
+        create_ranges_graph(scoresArray)
     if operationInput == "q":
         break
 
@@ -236,4 +244,11 @@ Graph output
 Classification of vulnerabilities
 - look at counts of CWEs and relate those to the differences in scoring
 -- did the type of vulnerabilities each year influence the overall scoring changes?
+
+Find better boundaries for L/M/H/C
+- break out data to determine the ranges
+- graph to automatically show proposed ranges of scores
+
+
+
 """

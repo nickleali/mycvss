@@ -72,6 +72,22 @@ def get_cna(cve_file):
       except:
           pass
 
+def modify_vector(cve, vector, version):
+  """Checks if a CVE is in the KEV and marks up the CVSS vector string accordingly.
+
+  Args:
+    cve: the CVE to check in the data source
+    vector: The CVSS vector.
+    version: The version of CVSS to modify.
+
+  Returns:
+    The modified CVSS vector, after modifications.
+
+  Consider enabling switches to allow for AV:N -> AV:A adjustments, as well as CR changes (default High, to Medium, etc.)
+  """
+
+  "kev_check here"
+
 def average_difference(arr):
   """
   Calculates the average between elements of a 2D array.
@@ -132,3 +148,67 @@ def create_histogram(arr):
 
     return
 
+def create_ranges_graph(arr):
+    """
+    Create a graph that shows the output of a 2D array. 
+
+    The graph should determine best fit for the qualitative ranges, Low, Medium, High, Critical, based on the percentage count.
+    Ideally this shows the qualitative boundaries for any data set.
+
+    Top 10% should be critical
+    70%-89% should be high
+    40-69% should be Medium
+    Remainder should be low
+
+    Figure out how to mark up based on the ranges
+
+    Can we use numpy percentile?
+
+    np.percentile(arr, "90")
+    """
+    n, bins, patches, = plt.hist(arr, bins=100, label=['v3.1', 'v4.0'])
+
+    """
+    for i in range(len(patches)):
+      if i < np.percentile(arr, 39):
+        patches[i].set_facecolor('green')
+      elif i < np.percentile(arr, 40):
+        patches[i].set_facecolor('yellow')
+      elif i < np.percentile(arr, 70):
+        patches[i].set_facecolor('orange')
+      else:
+        patches[i].set_facecolor('red')
+    """
+    print("Some vital statistics about this dataset:")
+    print("The 90th percentile (start of Critical for range) is: "+ str(np.percentile(arr, 90)))
+    print("The 70th percentile (start of High for range) is: "+ str(np.percentile(arr, 70)))
+    print("The 40th percentile (start of Medium for range) is: "+ str(np.percentile(arr, 40)))
+    print("The 39th percentile (end of Low for range) is: "+ str(np.percentile(arr, 39)))
+
+    plt.xlabel('Scores')
+    plt.ylabel('Count')
+    plt.title('Histogram of CVSS Scores')
+
+    plt.show()
+
+    return
+
+def determine_ranges(arr):
+    """
+    Return the range of differences, as in, the difference between the minium value of the array and the maximuim value of the array.
+
+    Args:
+     arr: A 2D NumPy array, the set of CVSS v3.1 and v4.0 scores.
+    
+    Returns:
+     One value: by finding the minium and maximum value of the array, this function returns the difference between those values.
+    """
+    allDiffs = np.diff(arr, axis=1)
+
+    maxDiff = allDiffs.max()
+
+    minDiff = allDiffs.min()
+    
+    rangeDiff = maxDiff - minDiff
+
+    return rangeDiff
