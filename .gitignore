@@ -4,3 +4,5 @@
 .idea/misc.xml
 .idea/vcs.xml
 .idea/modules.xml
+.devcontainer/devcontainer.json
+cvss-comparer/__pycache__/comfunctions.cpython-312.pyc
