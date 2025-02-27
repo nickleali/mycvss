@@ -72,12 +72,12 @@ def get_cna(cve_file):
       except:
           pass
 
-def modify_vector(cve, vector, version):
+def modify_vector(searchCVE, vectorString, version):
   """Checks if a CVE is in the KEV and marks up the CVSS vector string accordingly.
 
   Args:
-    cve: the CVE to check in the data source
-    vector: The CVSS vector.
+    searchCVE: the CVE to check in the data source
+    vectorString: The CVSS vector.
     version: The version of CVSS to modify.
 
   Returns:
@@ -87,6 +87,26 @@ def modify_vector(cve, vector, version):
   """
 
   "kev_check here"
+  with open('/tmp/kev/kev.json') as jsonFile:
+    kevData = json.load(jsonFile)
+
+  cve_string = json.dumps(kevData)
+
+  cveFind = cve_string.find(searchCVE)
+
+  if cveFind == -1:
+    cveFind = False
+  else:
+    cveFind = True
+  
+  if cveFind:
+    # modify vector, call CVSS check with re-written vector
+    # print("Found a CVE to modify.")
+    vectorString += '/E:A'
+  else:
+    vectorString += '/E:U'
+
+  return vectorString
 
 def average_difference(arr):
   """
@@ -138,7 +158,7 @@ def create_histogram(arr):
     """
     allDiffs = np.diff(arr, axis=1)
     
-    plt.hist(allDiffs, bins=40, )
+    plt.hist(allDiffs, bins=10, )
 
     plt.xlabel('Score Change')
     plt.ylabel('Count')
@@ -166,7 +186,7 @@ def create_ranges_graph(arr):
 
     np.percentile(arr, "90")
     """
-    n, bins, patches, = plt.hist(arr, bins=100, label=['v3.1', 'v4.0'])
+    n, bins, patches, = plt.hist(arr, bins=10, label=['v3.1', 'v4.0'])
 
     """
     for i in range(len(patches)):

@@ -61,8 +61,11 @@ fileCSV = Path("/home/kali/data.csv")
 
 scoresArray = np.array([[0, 0], [1, 1]])
 
+v4scoresArrayModified = np.array([[0, 0], [1, 1]])
+
 # Directory processing
 # return v4.0 and then corresponding v3.1 from a file, store in an array
+# consider rework to store all scores in independent arrays and use stacked histograms based on need
 # JSON format sorts in descending order, so v4.0 is always first
 
 if check_mode == "directory":
@@ -95,14 +98,29 @@ if check_mode == "directory":
                         # store whole line in local array
                         vector_lines.append(lines[i].strip("\n"))
 
-                        myv4Score = CVSS4(v4Vector)
-                        cvssv4Score = str(myv4Score.base_score)
-
-                        # Write all the v4.0 stuff out.
                         cveName = str(fname)
                         cve_start_index = cveName.index("CVE-")
                         cve_end_index = cveName.index(".")
                         cveName = cveName[cve_start_index:cve_end_index]
+                        
+                        # Calculate scores based on normal and adjusted vectors
+
+                        # Calculate normal scores
+                        myv4Score = CVSS4(v4Vector)
+                        cvssv4Score = str(myv4Score.base_score)
+
+                        # Go get the modified vector
+                        v4VectorModified = str(modify_vector(cveName, v4Vector, '4.0'))
+                        # print("this is the modified vector returned " + str(v4VectorModified))
+                        myv4Score = CVSS4(v4VectorModified)
+                        cvssv4ScoreModified = str(myv4Score.base_score)
+                        # print("This is the modified v4 score" + cvssv4ScoreModified)
+
+                        newModifiedScores = np.array([[float(cvssv4Score), float(cvssv4ScoreModified)]])
+                        v4scoresArrayModified = np.append(v4scoresArrayModified, newModifiedScores, axis=0)
+
+                        # Write all the v4.0 stuff out to various files based on switches.
+
                         if ouputAllData:
                             data_result.write(cveName + "\n" + vendorName + "\n" + "CVSS v4.0 vector: " + v4Vector + "\n" + "CVSS v4.0 score: " + cvssv4Score + "\n")
                         # csv_result.write(cveName + ", " + v4Vector + ", " + cvssv4Score + ", " + "\n")
@@ -189,6 +207,7 @@ print("Press the m key for the mode of the differences.")
 print("Press the r key for the range of the differences.")
 print("Press the l key for a histogram of all found CVSS scores.")
 print("Press the h key for a histogram of the found differences.")
+print("Enter c for a histogram of modified scores compared with the KEV.")
 print("Press any other key to quit.")
 
 while True:
@@ -208,7 +227,7 @@ while True:
         create_histogram(scoresArray)
     if operationInput == "r":
         # Get the average change, the mode
-        print("This is the range of all changes:" + determine_ranges(scoresArray))
+        print("This is the range of all changes:" + str(determine_ranges(scoresArray)))
     if operationInput == "m":
         # Get the average change, the mode
         print("This is the most common change for the calculated ranges:")
@@ -216,6 +235,8 @@ while True:
     if operationInput == "l":
         # Output histogram of all found CVSS data
         create_ranges_graph(scoresArray)
+    if operationInput == "c":
+        create_ranges_graph(v4scoresArrayModified)
     if operationInput == "q":
         break
 
