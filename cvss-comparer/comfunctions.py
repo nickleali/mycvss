@@ -86,6 +86,9 @@ def modify_vector(searchCVE, vectorString, version):
   Consider enabling switches to allow for AV:N -> AV:A adjustments, as well as CR changes (default High, to Medium, etc.)
   """
 
+  # Gotta ensure the string is only the base score, otherwise this check won't work.
+  # Concatenate ?
+
   "kev_check here"
   with open('/tmp/kev/kev.json') as jsonFile:
     kevData = json.load(jsonFile)
@@ -158,19 +161,28 @@ def create_histogram(arr):
     """
     allDiffs = np.diff(arr, axis=1)
     
-    plt.hist(allDiffs, bins=10, )
+    values, bins, bars = plt.hist(allDiffs, bins=10, )
 
-    plt.xlabel('Score Change')
-    plt.ylabel('Count')
+    plt.xlabel('Value of Score Change')
+    plt.ylabel('Numer of Score Changes')
+    plt.bar_label(bars)
     plt.title('Histogram of CVSS Score Changes')
 
     plt.show()
 
     return
 
-def create_ranges_graph(arr):
+def create_stacked_graph(arr1, arr2, title):
     """
-    Create a graph that shows the output of a 2D array. 
+    Create a stacked histogram that shows the output of a two arrays.
+
+    Args:
+     arr1: A NumPy array, the set of values to graph.
+     arr2: A NumPy array, the set of values to graph.
+     title: The desired title of the graph.
+    
+    Returns:
+     A matplotlib object of the array of differences. 
 
     The graph should determine best fit for the qualitative ranges, Low, Medium, High, Critical, based on the percentage count.
     Ideally this shows the qualitative boundaries for any data set.
@@ -186,7 +198,72 @@ def create_ranges_graph(arr):
 
     np.percentile(arr, "90")
     """
-    n, bins, patches, = plt.hist(arr, bins=10, label=['v3.1', 'v4.0'])
+
+    """
+    For stacked array
+    plt.hist(arr1, bins=10, alpha=0.5, label='CVSS v3.1')
+    plt.hist(arr2, bins=10, alpha=0.5, label='CVSS v4.0')
+    plt.legend(loc='upper right')
+    """
+    """For side by side arrays"""
+
+    plt.hist([arr1, arr2], bins=20, label=['CVSS v3.1', 'CVSS v4.0'])
+    plt.legend(loc='upper right')
+
+    # Try some annotation
+
+    # plt.annotate('v3.1 Stats', xy=[10,10], xytext=[0, 0], textcoords="offset points", ha = 'center', va = 'bottom')
+
+    # No, actually try .text
+
+    # plt.text('v3.1 Stats', horizontalalignment='left', verticalalignment='top')
+    #plt.annotate()
+    
+    plt.title(title)
+
+    print("Some vital statistics about the v3.1 dataset:")
+    print("The 90th percentile (start of Critical for range) is: "+ str(np.percentile(arr1, 90)))
+    print("The 70th percentile (start of High for range) is: "+ str(np.percentile(arr1, 70)))
+    print("The 40th percentile (start of Medium for range) is: "+ str(np.percentile(arr1, 40)))
+    print("The 39th percentile (end of Low for range) is: "+ str(np.percentile(arr1, 39)))
+
+    print("And the same for the v4.0 dataset:")
+    print("The 90th percentile (start of Critical for range) is: "+ str(np.percentile(arr2, 90)))
+    print("The 70th percentile (start of High for range) is: "+ str(np.percentile(arr2, 70)))
+    print("The 40th percentile (start of Medium for range) is: "+ str(np.percentile(arr2, 40)))
+    print("The 39th percentile (end of Low for range) is: "+ str(np.percentile(arr2, 39)))
+
+    plt.show()
+
+    return
+
+def create_ranges_graph(arr, title):
+    """
+    Create a graph that shows the output of a 2D array.
+
+    Args:
+     arr: A 2D NumPy array, the set of values to graph.
+     title: The desired title of the graph.
+     twodee: Is the data multidimensional?
+    
+    Returns:
+     A matplotlib object of the array of differences. 
+
+    The graph should determine best fit for the qualitative ranges, Low, Medium, High, Critical, based on the percentage count.
+    Ideally this shows the qualitative boundaries for any data set.
+
+    Top 10% should be critical
+    70%-89% should be high
+    40-69% should be Medium
+    Remainder should be low
+
+    Figure out how to mark up based on the ranges
+
+    Can we use numpy percentile?
+
+    np.percentile(arr, "90")
+    """
+    values, bins, bars = plt.hist(arr, bins=10, label='testing')
 
     """
     for i in range(len(patches)):
@@ -207,7 +284,7 @@ def create_ranges_graph(arr):
 
     plt.xlabel('Scores')
     plt.ylabel('Count')
-    plt.title('Histogram of CVSS Scores')
+    plt.title(title)
 
     plt.show()
 
