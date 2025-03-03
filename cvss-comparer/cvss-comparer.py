@@ -35,7 +35,7 @@ data_csv is a CSV format output of everything
 check_mode is the value for operation, either directory or CSV
 """
 
-check_mode = "directory"
+check_mode = "CSV"
 
 vendorCheck = False
 
@@ -58,7 +58,7 @@ csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4
 result = list(Path("/tmp/advisory-database/advisories/github-reviewed/2024").rglob("*.json"))
 
 # Set the path of the CSV file to check here
-fileCSV = Path("/home/kali/data.csv")
+fileCSV = Path("/tmp/data.csv")
 
 # Creating our numpy array for the derived scores
 # This is a 2D array, first column v3.1, second column v4.0
@@ -192,6 +192,21 @@ if check_mode == "CSV":
     
     vector_lines = []
     for i in range(len(lines)):
+        inputCheck = str(lines[i])
+        inputCheck = inputCheck.strip()
+        print("This is the line to check:" + inputCheck)
+        match = re.search("CVE-", inputCheck)
+        match = str(match)
+        if match:
+            start_index = inputCheck.index("CVE-")
+            # need to improve this to handle multi-length CVEs and other CVEs found in description better
+            # end_index = inputCheck.index("\",")
+            foundCVE = inputCheck[start_index:start_index+14]
+            foundCVE = foundCVE.strip("\"")
+            print("We found the CVE:" + foundCVE + "***********")
+            cveName = foundCVE
+        else:
+            print("No CVE found.")
         try:
             if "CVSS:4.0" in lines[i]:
                 
@@ -217,8 +232,18 @@ if check_mode == "CSV":
                 scoresArray = np.append(scoresArray, newScores, axis=0)
                 v3scoresArray = np.append(v3scoresArray, float(cvssv3Score))
                 v4scoresArray = np.append(v4scoresArray, float(cvssv4Score))
+
+                v4VectorModified = str(modify_vector(cveName, v4Vector, '4.0'))
+                print("this is the modified vector returned " + str(v4VectorModified))
+                myv4Score = CVSS4(v4VectorModified)
+                cvssv4ScoreModified = str(myv4Score.base_score)
+                print("This is the modified v4 score" + cvssv4ScoreModified)
+                # newModifiedScores = np.array([[float(cvssv4Score), float(cvssv4ScoreModified)]])
+                v4scoresArrayModified = np.append(v4scoresArrayModified, float(cvssv4ScoreModified))
         except:
             pass
+
+
 
 # main program loop, after data processing
 
