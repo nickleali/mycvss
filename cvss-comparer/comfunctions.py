@@ -40,6 +40,39 @@ def get_vector(vector, version):
   else:
       return "Invalid CVSS vector version"
 
+def get_cve(cve_file):
+  """Searches a file for a CVE and returns the clean CVE.
+
+  Args:
+    cve_file: The file containing CVE- somewhere.
+    
+  Returns:
+    The CVE, or None if the pattern is not found.
+  """
+  f = open(cve_file)
+  lines = f.readlines()
+
+  for i in range(len(lines)):
+      inputCheck = str(lines[i])
+      inputCheck = inputCheck.strip()
+      # print("This is the line to check:" + inputCheck)
+      try: 
+          match = re.search("CVE-", inputCheck)
+          match = str(match)
+          if match:
+              start_index = inputCheck.index("CVE-")
+              # need to improve this to handle multi-length CVEs and other CVEs found in description better
+              # end_index = inputCheck.index("\",")
+              foundCVE = inputCheck[start_index:start_index+14]
+              foundCVE = foundCVE.strip("\"")
+              print("We found the CVE:" + foundCVE + "***********")
+              return foundCVE
+          else:
+              return False 
+              # print("name not found")
+      except:
+          pass
+
 def get_cna(cve_file):
   """Searches a CVE program json file and returns the value of the assignerShortName field.
 
@@ -172,13 +205,15 @@ def create_histogram(arr):
 
     return
 
-def create_stacked_graph(arr1, arr2, title):
+def create_stacked_graph(arr1, arr1Title, arr2, arr2Title, title):
     """
     Create a stacked histogram that shows the output of a two arrays.
 
     Args:
      arr1: A NumPy array, the set of values to graph.
+     arr1Title: The data of the first array for the legend.
      arr2: A NumPy array, the set of values to graph.
+     arr2Title: The data of the second array for the legend.
      title: The desired title of the graph.
     
     Returns:
@@ -207,7 +242,7 @@ def create_stacked_graph(arr1, arr2, title):
     """
     """For side by side arrays"""
 
-    plt.hist([arr1, arr2], bins=20, label=['CVSS v3.1', 'CVSS v4.0'])
+    plt.hist([arr1, arr2], bins=20, label=[arr1Title, arr2Title])
     plt.legend(loc='upper right')
 
     # Try some annotation
@@ -308,4 +343,8 @@ def determine_ranges(arr):
     
     rangeDiff = maxDiff - minDiff
 
-    return rangeDiff
+    diffStatement = "Max increase was " + str(maxDiff) + " and the max decrease was " + str(minDiff) + ", so the total range between was " + str(rangeDiff)
+
+    # Give more data here. The values may be negative changes, so return also what the max and min were. Maybe a string.
+
+    return diffStatement

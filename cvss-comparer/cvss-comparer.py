@@ -52,10 +52,10 @@ csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4
 
 # Set the list of all the files to check here
 # CVE program json folder
-result = list(Path("/tmp/cvelistV5/cves/2024").rglob("*.json"))
-
+# result = list(Path("/tmp/cvelistV5/cves/2024").rglob("*.json"))
+ 
 # github folder
-# result = list(Path("/tmp/advisory-database/advisories/github-reviewed/2024").rglob("*.json"))
+result = list(Path("/tmp/advisory-database/advisories/github-reviewed/2024").rglob("*.json"))
 
 # Set the path of the CSV file to check here
 fileCSV = Path("/home/kali/data.csv")
@@ -65,11 +65,13 @@ fileCSV = Path("/home/kali/data.csv")
 
 scoresArray = np.array([[0, 0], [1, 1]])
 
+allv4scoresArray = np.array([0, 0])
+
 v3scoresArray = np.array([0, 0])
 
 v4scoresArray = np.array([0, 0])
 
-v4scoresArrayModified = np.array([[0, 0], [1, 1]])
+v4scoresArrayModified = np.array([0, 0])
 
 # Directory processing
 # return v4.0 and then corresponding v3.1 from a file, store in an array
@@ -106,19 +108,8 @@ if check_mode == "directory":
                         # store whole line in local array
                         vector_lines.append(lines[i].strip("\n"))
 
-                        try:
-                            if "CVE-" in fname:
-                                cveName = str(fname)
-                                cve_start_index = cveName.index("CVE-")
-                                cve_end_index = cveName.index(".")
-                                cveName = cveName[cve_start_index:cve_end_index]
-                            else:
-                                for i in range(len(lines)):
-                                    cveCheck = str(lines[i])
-                                    cveCheck = cveCheck.strip()
-                                    match = re.search(vector, version)
-                        except:
-                            pass
+                        cveName = "CVE-" + get_cve(fname)
+                        print("This is the CVE:" + cveName)
                             
                         # Calculate scores based on normal and adjusted vectors
 
@@ -126,19 +117,22 @@ if check_mode == "directory":
                         myv4Score = CVSS4(v4Vector)
                         cvssv4Score = str(myv4Score.base_score)
 
+                        # Save all the found CVSS v4.0 data for stats later
+
+                        allv4scoresArray = np.append(allv4scoresArray, float(cvssv4Score))
+
                         # Go get the modified vector, if it's not already modified
                         try:
-                            v4VectorModified = str(modify_vector(cveName, v4Vector, '4.0'))
-                            print("this is the modified vector returned " + str(v4VectorModified))
-                            myv4Score = CVSS4(v4VectorModified)
-                            cvssv4ScoreModified = str(myv4Score.base_score)
-                            print("This is the modified v4 score" + cvssv4ScoreModified)
-                            newModifiedScores = np.array([[float(cvssv4Score), float(cvssv4ScoreModified)]])
-                            v4scoresArrayModified = np.append(v4scoresArrayModified, newModifiedScores, axis=0)
+                            if cveName:
+                                v4VectorModified = str(modify_vector(cveName, v4Vector, '4.0'))
+                                print("this is the modified vector returned " + str(v4VectorModified))
+                                myv4Score = CVSS4(v4VectorModified)
+                                cvssv4ScoreModified = str(myv4Score.base_score)
+                                print("This is the modified v4 score" + cvssv4ScoreModified)
+                                # newModifiedScores = np.array([[float(cvssv4Score), float(cvssv4ScoreModified)]])
+                                v4scoresArrayModified = np.append(v4scoresArrayModified, float(cvssv4ScoreModified))
                         except:
                             pass
-
-
 
                         # Write all the v4.0 stuff out to various files based on switches.
 
@@ -174,7 +168,7 @@ if check_mode == "directory":
                                     print("str(cveName)" + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
                                     csv_result.write("cveName" + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
 
-                                # Append to the numpy array
+                                # Here we save out all the matched CVSS values we found for later comparison
                                 newScores = np.array([[float(cvssv3Score), float(cvssv4Score)]])
                                 scoresArray = np.append(scoresArray, newScores, axis=0)
                                 v3scoresArray = np.append(v3scoresArray, float(cvssv3Score))
@@ -221,6 +215,8 @@ if check_mode == "CSV":
                 # Append to the numpy array for later statistics use
                 newScores = np.array([[float(cvssv3Score), float(cvssv4Score)]])
                 scoresArray = np.append(scoresArray, newScores, axis=0)
+                v3scoresArray = np.append(v3scoresArray, float(cvssv3Score))
+                v4scoresArray = np.append(v4scoresArray, float(cvssv4Score))
         except:
             pass
 
@@ -268,9 +264,9 @@ while True:
         # Output histogram of all found CVSS data
         create_ranges_graph(scoresArray, "All Found CVSS Data")
     if operationInput == "c":
-        create_ranges_graph(v4scoresArrayModified, "Modified CVSS v4.0 Scores")
+        create_stacked_graph(v4scoresArray, "CVSS-B v4.0 Scores", v4scoresArrayModified, "CVSS-BTE v4.0 Scores", "Compared Base and BTE Scores")
     if operationInput == "2":
-        create_stacked_graph(v3scoresArray, v4scoresArray, "CVSS v3.1 and v4.0 Scores")
+        create_stacked_graph(v3scoresArray, "CVSS v3.1 scores", v4scoresArray, "CVSS v4.0 scores", "CVSS v3.1 and v4.0 Scores")
     if operationInput == "q":
         break
 
