@@ -65,7 +65,7 @@ def get_cve(cve_file):
               # end_index = inputCheck.index("\",")
               foundCVE = inputCheck[start_index:start_index+14]
               foundCVE = foundCVE.strip("\"")
-              print("We found the CVE:" + foundCVE + "***********")
+              # print("We found the CVE:" + foundCVE + "***********")
               return foundCVE
           else:
               return False 
@@ -385,7 +385,10 @@ def calc_boundary_crosses(arr):
         QualitativeValueThree = "High"
       elif (arr[arrayIndex][0] > 9.0):
         QualitativeValueThree = "Critical"
-      print("The v3.1 value is: " + QualitativeValueThree)
+      else:
+         QualitativeValueThree = "Unknown"
+      # print("The v3.1 value is: " + QualitativeValueThree)
+
       if arr[arrayIndex][1] < 3.9:
         QualitativeValueFour = "Low"
       elif (arr[arrayIndex][1] > 4.0) and (arr[arrayIndex][1] < 6.9):
@@ -394,14 +397,18 @@ def calc_boundary_crosses(arr):
         QualitativeValueFour = "High"
       elif (arr[arrayIndex][1] > 9.0):
         QualitativeValueFour = "Critical"
-      print("The v4.0 value is: " + QualitativeValueFour)
+      # print("The v4.0 value is: " + QualitativeValueFour)
+      else:
+         QualitativeValueFour = "Unknown"
+      
       if QualitativeValueThree != QualitativeValueFour:
-         print("Found v3.1 and v4.0 qualitative boundary crossed.")
+         # print("Found v3.1 and v4.0 qualitative boundary crossed.")
          # iterate the count change
          changedCount = changedCount+1
     
     else:
-      print("Values are equal.")
+      changedCount = changedCount
+      # print("Values are equal.")
     arrayIndex = arrayIndex+1
 
   return changedCount 
