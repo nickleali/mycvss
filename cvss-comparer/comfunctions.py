@@ -348,3 +348,60 @@ def determine_ranges(arr):
     # Give more data here. The values may be negative changes, so return also what the max and min were. Maybe a string.
 
     return diffStatement
+
+def calc_boundary_crosses(arr):
+  """
+  Calculates the count of qualitative boundary crossings as determined by CVSS v3.1 and v4.0 scores. Commonly defined as per Cisco and others:
+
+  https://sec.cloudapps.cisco.com/security/center/resources/security_vulnerability_policy.html#asr
+
+  Args:
+    arr: A 2D NumPy array consisting of CVSS v3.1 and v4.0 numeric scores.
+
+  Returns:
+    Information about the boundary changes. Should at least count the number of increases, decreases, and types of changes.
+  """
+
+  """
+  Logic:
+  
+  For each set of numbers, determine the value. We can do that for each value, and then compare.
+
+  """
+
+  # Let's try to just print the output line by line first for practice
+
+  arrayIndex = 0
+  changedCount = 0
+  for row in arr:
+    # print("Checking the following values:" + str(arr[arrayIndex][0]) + " and " + str(arr[arrayIndex][1]))
+    if arr[arrayIndex][0] != arr[arrayIndex][1]:
+      # print("Values are not equal.")
+      if arr[arrayIndex][0] < 3.9:
+        QualitativeValueThree = "Low"
+      elif (arr[arrayIndex][0] > 4.0) and (arr[arrayIndex][0] < 6.9):
+        QualitativeValueThree = "Medium"
+      elif (arr[arrayIndex][0] > 7.0) and (arr[arrayIndex][0] < 8.9):
+        QualitativeValueThree = "High"
+      elif (arr[arrayIndex][0] > 9.0):
+        QualitativeValueThree = "Critical"
+      print("The v3.1 value is: " + QualitativeValueThree)
+      if arr[arrayIndex][1] < 3.9:
+        QualitativeValueFour = "Low"
+      elif (arr[arrayIndex][1] > 4.0) and (arr[arrayIndex][1] < 6.9):
+        QualitativeValueFour = "Medium"
+      elif (arr[arrayIndex][1] > 7.0) and (arr[arrayIndex][1] < 8.9):
+        QualitativeValueFour = "High"
+      elif (arr[arrayIndex][1] > 9.0):
+        QualitativeValueFour = "Critical"
+      print("The v4.0 value is: " + QualitativeValueFour)
+      if QualitativeValueThree != QualitativeValueFour:
+         print("Found v3.1 and v4.0 qualitative boundary crossed.")
+         # iterate the count change
+         changedCount = changedCount+1
+    
+    else:
+      print("Values are equal.")
+    arrayIndex = arrayIndex+1
+
+  return changedCount 

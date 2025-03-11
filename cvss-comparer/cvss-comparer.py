@@ -35,7 +35,7 @@ data_csv is a CSV format output of everything
 check_mode is the value for operation, either directory or CSV
 """
 
-check_mode = "CSV"
+check_mode = "directory"
 
 vendorCheck = False
 
@@ -255,6 +255,7 @@ print("Press the m key for the mode of the differences.")
 print("Press the r key for the range of the differences.")
 print("Press the l key for a histogram of all found CVSS scores.")
 print("Press the 2 key for a stacked histogram to compare found v3.1 and v4.0 scores.")
+print("Press the 3 key to list boundary changes between found v3.1 and v4.0 scores.")
 print("Press the h key for a histogram of the found differences.")
 print("Enter c for a histogram of modified scores compared with the KEV.")
 print("Press any other key to quit.")
@@ -292,6 +293,8 @@ while True:
         create_stacked_graph(v4scoresArray, "CVSS-B v4.0 Scores", v4scoresArrayModified, "CVSS-BTE v4.0 Scores", "Compared Base and BTE Scores")
     if operationInput == "2":
         create_stacked_graph(v3scoresArray, "CVSS v3.1 scores", v4scoresArray, "CVSS v4.0 scores", "CVSS v3.1 and v4.0 Scores")
+    if operationInput == "3":
+        print("There are " + str(calc_boundary_crosses(scoresArray)) + " changed SIR values.")
     if operationInput == "q":
         break
 
