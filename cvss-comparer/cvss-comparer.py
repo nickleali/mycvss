@@ -52,7 +52,7 @@ csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4
 
 # Set the list of all the files to check here
 # CVE program json folder
-result = list(Path("/tmp/cvelistV5/cves/").rglob("*.json"))
+result = list(Path("/tmp/cvelistV5/cves/2025/0xxx").rglob("*.json"))
  
 # github folder
 # result = list(Path("/tmp/advisory-database/advisories/github-reviewed/2024").rglob("*.json"))

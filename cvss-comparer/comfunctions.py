@@ -206,11 +206,12 @@ def create_histogram(arr):
     """
     allDiffs = np.diff(arr, axis=1)
     
-    values, bins, bars = plt.hist(allDiffs, bins=10, )
+    values, bins, bars = plt.hist(allDiffs, bins=30, )
 
     plt.xlabel('Value of Score Change')
     plt.ylabel('Numer of Score Changes')
     plt.bar_label(bars)
+    plt.xticks(np.arange(-3, 3, 1))
     plt.title('Histogram of CVSS Score Changes')
 
     plt.show()
@@ -396,6 +397,12 @@ def calc_boundary_crosses(arr):
   HighToMedium = 0
   CriticalToHigh = 0
 
+  # Big shifts
+  LowToHigh = 0
+  MediumToCritical = 0
+  CriticalToMedium = 0
+  HighToLow = 0
+
   # Main loop to check
   for row in arr:
     # print("Checking the following values:" + str(arr[arrayIndex][0]) + " and " + str(arr[arrayIndex][1]))
@@ -445,6 +452,15 @@ def calc_boundary_crosses(arr):
             HighToMedium = HighToMedium+1
          if QualitativeValueThree == "Critical" and QualitativeValueFour == "High":
             CriticalToHigh = CriticalToHigh+1
+         # Big boundary shifts
+         if QualitativeValueThree == "Low" and QualitativeValueFour == "High":
+            LowToHigh = LowToHigh+1
+         if QualitativeValueThree == "Medium" and QualitativeValueFour == "Critical":
+            MediumToCritical = MediumToCritical+1
+         if QualitativeValueThree == "Critical" and QualitativeValueFour == "Medium":
+            CriticalToMedium = CriticalToMedium+1
+         if QualitativeValueThree == "High" and QualitativeValueFour == "Low":
+            HighToLow = HighToLow+1
     
     else:
       changedCount = changedCount
@@ -461,6 +477,11 @@ def calc_boundary_crosses(arr):
                    "Total Decreases: " + str(MediumToLow+HighToMedium+CriticalToHigh) + "\n" + 
                    "Medium to Low changes: " + str(MediumToLow) + "\n" + 
                    "High to Medium changes: " + str(HighToMedium) + "\n" + 
-                   "Critical to High changes: " + str(CriticalToHigh) + "\n")
+                   "Critical to High changes: " + str(CriticalToHigh) + "\n"
+                   "Big Changes: " + str(LowToHigh+MediumToCritical+CriticalToMedium+HighToLow) + "\n" + 
+                   "Low to High changes: " + str(LowToHigh) + "\n" + 
+                   "Medium to High changes: " + str(MediumToCritical) + "\n" + 
+                   "Critical to Medium changes: " + str(CriticalToMedium) + "\n"
+                   "High to Low changes: " + str(HighToLow) + "\n")
 
   return boundaryResult
