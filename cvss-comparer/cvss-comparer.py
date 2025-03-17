@@ -52,7 +52,7 @@ csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4
 
 # Set the list of all the files to check here
 # CVE program json folder
-result = list(Path("/tmp/cvelistV5/cves/2024").rglob("*.json"))
+result = list(Path("/tmp/cvelistV5/cves/").rglob("*.json"))
  
 # github folder
 # result = list(Path("/tmp/advisory-database/advisories/github-reviewed/2024").rglob("*.json"))
@@ -290,7 +290,7 @@ while True:
     if operationInput == "c":
         create_stacked_graph(v4scoresArray, "CVSS-B v4.0 Scores", v4scoresArrayModified, "CVSS-BTE v4.0 Scores", "Compared Base and BTE Scores")
     if operationInput == "3":
-        print("There are " + str(calc_boundary_crosses(scoresArray)) + " changed SIR values.")
+        print(calc_boundary_crosses(scoresArray))
     if operationInput == "q":
         break
 

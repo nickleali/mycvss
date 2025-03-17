@@ -105,6 +105,18 @@ def get_cna(cve_file):
       except:
           pass
 
+def reverse_vector(cvssv4Vector):
+   """
+   Work backwards and generate a v3.1 vector string from a supplied v4.0 vector.
+
+  Args:
+    cvssv3Vector: the CVSS v3.1 vector to modify
+
+  Returns:
+    The converted CVSS v3.1 vector, after modifications.
+   
+   """
+
 def modify_vector(searchCVE, vectorString, version):
   """Checks if a CVE is in the KEV and marks up the CVSS vector string accordingly.
 
@@ -373,17 +385,29 @@ def calc_boundary_crosses(arr):
 
   arrayIndex = 0
   changedCount = 0
+
+  # Increase counters
+  LowToMedium = 0
+  MediumToHigh = 0
+  HighToCritical = 0
+
+  # Decrease counters
+  MediumToLow = 0
+  HighToMedium = 0
+  CriticalToHigh = 0
+
+  # Main loop to check
   for row in arr:
     # print("Checking the following values:" + str(arr[arrayIndex][0]) + " and " + str(arr[arrayIndex][1]))
     if arr[arrayIndex][0] != arr[arrayIndex][1]:
-      # print("Values are not equal.")
+      # print("Values are not equal. v3.1 score is " + str(arr[arrayIndex][0]) + " and v4.0 score is " + str(arr[arrayIndex][1]))
       if arr[arrayIndex][0] < 3.9:
         QualitativeValueThree = "Low"
-      elif (arr[arrayIndex][0] > 4.0) and (arr[arrayIndex][0] < 6.9):
+      elif (arr[arrayIndex][0] >= 4.0) and (arr[arrayIndex][0] <= 6.9):
         QualitativeValueThree = "Medium"
-      elif (arr[arrayIndex][0] > 7.0) and (arr[arrayIndex][0] < 8.9):
+      elif (arr[arrayIndex][0] >= 7.0) and (arr[arrayIndex][0] <= 8.9):
         QualitativeValueThree = "High"
-      elif (arr[arrayIndex][0] > 9.0):
+      elif (arr[arrayIndex][0] >= 9.0):
         QualitativeValueThree = "Critical"
       else:
          QualitativeValueThree = "Unknown"
@@ -391,24 +415,52 @@ def calc_boundary_crosses(arr):
 
       if arr[arrayIndex][1] < 3.9:
         QualitativeValueFour = "Low"
-      elif (arr[arrayIndex][1] > 4.0) and (arr[arrayIndex][1] < 6.9):
+      elif (arr[arrayIndex][1] >= 4.0) and (arr[arrayIndex][1] <= 6.9):
         QualitativeValueFour = "Medium"
-      elif (arr[arrayIndex][1] > 7.0) and (arr[arrayIndex][1] < 8.9):
+      elif (arr[arrayIndex][1] >= 7.0) and (arr[arrayIndex][1] <= 8.9):
         QualitativeValueFour = "High"
-      elif (arr[arrayIndex][1] > 9.0):
+      elif (arr[arrayIndex][1] >= 9.0):
         QualitativeValueFour = "Critical"
       # print("The v4.0 value is: " + QualitativeValueFour)
       else:
          QualitativeValueFour = "Unknown"
       
-      if QualitativeValueThree != QualitativeValueFour:
-         # print("Found v3.1 and v4.0 qualitative boundary crossed.")
+      # Tell what values we've found
+      # print("v3.1 value is " + QualitativeValueThree + " and v4.0 value is " + QualitativeValueFour)
+      if not QualitativeValueThree == QualitativeValueFour:
+         # print("Found v3.1 and v4.0 qualitative boundary crossed. ********")
          # iterate the count change
          changedCount = changedCount+1
+         # Let's try to get more data about which changes increase
+         if QualitativeValueThree == "Low" and QualitativeValueFour == "Medium":
+            LowToMedium = LowToMedium+1
+         if QualitativeValueThree == "Medium" and QualitativeValueFour == "High":
+            MediumToHigh = MediumToHigh+1
+         if QualitativeValueThree == "High" and QualitativeValueFour == "Critical":
+            HighToCritical = HighToCritical+1
+         # Let's try to get more data about which changes increase
+         if QualitativeValueThree == "Medium" and QualitativeValueFour == "Low":
+            MediumToLow = MediumToLow+1
+         if QualitativeValueThree == "High" and QualitativeValueFour == "Medium":
+            HighToMedium = HighToMedium+1
+         if QualitativeValueThree == "Critical" and QualitativeValueFour == "High":
+            CriticalToHigh = CriticalToHigh+1
     
     else:
       changedCount = changedCount
       # print("Values are equal.")
     arrayIndex = arrayIndex+1
 
-  return changedCount 
+  # Build the data statement to send back
+
+  boundaryResult = ("Total changes: " + str(changedCount) + "\n" + 
+                   "Total Increases: " + str(LowToMedium+MediumToHigh+HighToCritical) + "\n" + 
+                   "Low to Medium changes: " + str(LowToMedium) + "\n" + 
+                   "Medium to High changes: " + str(MediumToHigh) + "\n" + 
+                   "High to Critcal changes: " + str(HighToCritical) + "\n" + 
+                   "Total Decreases: " + str(MediumToLow+HighToMedium+CriticalToHigh) + "\n" + 
+                   "Medium to Low changes: " + str(MediumToLow) + "\n" + 
+                   "High to Medium changes: " + str(HighToMedium) + "\n" + 
+                   "Critical to High changes: " + str(CriticalToHigh) + "\n")
+
+  return boundaryResult
