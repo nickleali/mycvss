@@ -6,3 +6,5 @@
 .idea/modules.xml
 .devcontainer/devcontainer.json
 cvss-comparer/__pycache__/comfunctions.cpython-312.pyc
+v4_vectors
+v3_vectors

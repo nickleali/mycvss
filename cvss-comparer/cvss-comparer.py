@@ -52,10 +52,10 @@ csv_result.write("CVE Name" + ", " + "CVSS v4.0 Vector String" + ", " + "CVSS v4
 
 # Set the list of all the files to check here
 # CVE program json folder
-result = list(Path("/tmp/cvelistV5/cves/2025/0xxx").rglob("*.json"))
+# result = list(Path("/tmp/cvelistV5/cves/").rglob("*.json"))
  
 # github folder
-# result = list(Path("/tmp/advisory-database/advisories/github-reviewed/2024").rglob("*.json"))
+result = list(Path("/tmp/advisory-database/advisories/github-reviewed").rglob("*.json"))
 
 # Set the path of the CSV file to check here
 fileCSV = Path("/tmp/data.csv")
@@ -164,9 +164,10 @@ if check_mode == "directory":
                                 # Write all the stuff out, this is only CVEs with both v3.1 and v4.0 scores
 
                                 if outputCSV:
-                                    print("Write out CSV.")
-                                    print("str(cveName)" + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
-                                    csv_result.write("cveName" + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
+                                    # print("Write out CSV.")
+                                    # print("str(cveName)" + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
+                                    # csv_result.write("cveName" + ", " + v4Vector + ", " + cvssv4Score + ", " + v3Vector + ", " + cvssv3Score + "\n")
+                                    csv_result.write(vendorName + "\n")
 
                                 # Here we save out all the matched CVSS values we found for later comparison
                                 newScores = np.array([[float(cvssv3Score), float(cvssv4Score)]])
