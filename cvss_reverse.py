@@ -40,10 +40,11 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
     User Interaction -- If UI:P or UI:A, then set UI:R
     Privileges Required -- also directly translate
     Scope -- A little tricky. Basically, we need to see if either CIA or vulnerable or subsequent system has non-N metrics. 
+    Impact Metrics -- In the event of two sets, pick the highest. Convert CIA to C / I / A. 
         If there are more H values for one than the other, use that as the vector.
-    Impact Metrics -- In the event of two sets, pick the highest. Convert CIA to C / I / A.
+        If the vectors match, or have the count of High impacts, use the vulnerable system for the CIA score in v3.1.
 
-    Exploit maturity -- This is harder. We can make a rule that High means Attacked. Does Functional also equal Attacked?
+    Exploit maturity -- High equates to Attacked, roughly. Setting Functional to Attacked as well.
         PoC maps to v3.1. Unproven is also the same.
     
     '''
@@ -55,8 +56,10 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
         v3_string = "CVSS:3.1/AV:A"
     elif "AV:L" in line:
         v3_string = "CVSS:3.1/AV:L"
-    else: 
+    elif "AV:P" in line:
         v3_string = "CVSS:3.1/AV:P"
+    else:
+        v3_string = "CVSS:3.1/AV:N"
 
     # attack complexity checks
     if "AT:P" in line:
@@ -71,8 +74,10 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
         v3_string = v3_string + "/PR:N"
     elif "PR:L" in line:
         v3_string = v3_string + "/PR:L"
-    else:
+    elif "PR:H" in line:
         v3_string = v3_string + "/PR:H"
+    else:
+        v3_string = v3_string + "/PR:N"
 
       # user interaction checks
     if "UI:P" in line:
@@ -152,6 +157,8 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
             v3_string = v3_string + "/E:H"
         elif "E:P" in line:
             v3_string = v3_string + "/E:P"
+        elif "E:X" in line:
+            v3_string = v3_string + "/E:X"
         else:
             v3_string = v3_string + "/E:X"
     except:
@@ -161,13 +168,16 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
       
     print(v3_string)
 
-    # combine the final vector string with the derived v3_string for the later v4 score check
+    # combine the final vector string with the calculator URL if we want to supply that
 
     url = "https://www.first.org/cvss/calculator/3.1#" + v3_string
            
     # Write the vector and score to the destination file
     # destination.write(calc_value + " " + line + "\n")
     destination.write(v3_string + "\n")
-    # print(line)
-    # print(v3_string)
+
+    # end of file check loop
+
+# end of program
+
 
