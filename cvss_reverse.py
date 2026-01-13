@@ -106,7 +106,7 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
     # get count of H in either r"SC|SI|SA:L|H" and use which has more H
     # if they are the same, how do we reconcile
 
-    if count_impact_metrics(line, vulnSystemImpacts) > count_impact_metrics(line, subsSystemImpacts):
+    if count_impact_metrics(line, vulnSystemImpacts) >= count_impact_metrics(line, subsSystemImpacts):
         # vulnerable system Confidentiality impact metric processing
         if "/VC:N" in line:
             v3_string = v3_string + "/C:N"
