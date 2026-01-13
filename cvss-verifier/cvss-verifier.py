@@ -25,3 +25,13 @@
 ## Dashboard
 
 ### Slice and search by vendor
+
+import cvss_differ
+
+# Example Usage:
+v1 = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+v2 = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+print(cvss_differ.compare_cvss_vectors(v1, v2))  # Output: None
+
+v3 = "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+print(cvss_differ.compare_cvss_vectors(v1, v3))  # Output: {'AV': False, 'AC': True, ...}

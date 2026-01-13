@@ -8,3 +8,5 @@
 cvss-comparer/__pycache__/comfunctions.cpython-312.pyc
 v4_vectors
 v3_vectors
+cvss-verifier/__pycache__/cvss_differ.cpython-314.pyc
+/cve
