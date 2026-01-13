@@ -1,42 +1,61 @@
-# Closing the Vulnerability Gap through CVSS Maturity
 
-How can the vulnerability disclosure ecosystem better help our customers to make decisions about prioritization?
 
-Should this focus on CVSS?
+Paths forward for CVE quality.
 
-## The CVSS Base Score problem
+Reinforcing trust in CVE quality.
 
-CVSS has become shorthand for patch prioritization. But this overstates risk.
+How can we close the vulnerability assessment gap?
 
-CVSS Threat and Environmental in the standard help. However, CVSS-BTE presents challenges and difficulty to do at scale.
 
-Scanning vendors do not detail 
+#
+
+# Closing the Vulnerability Assessment Gap
+
+Am I affected?
+
+And why?
+
+These two questions flummox PSIRT teams across the industry. Technical vulnerability impacts aren't always clear, even in the best security advisories. While product vendors provide their own assessments, any number of other players in the vulnerability disclosure ecosystem make their own unique assessments and put their own spin on the issue. These additional assessments provide valuable data but can also cause confusion, leading customers to question the initial product vendor assessments.
+
+Which assessment is correct? Is one assessment right and one wrong? Who should customers trust? How can the vulnerability disclosure ecosystem better help our customers to make decisions about prioritization?
+
+This talk discusses pragmatic approaches to improving vulnerability assessment information for PSIRTs and the greater vulnerability disclosure ecosystem. 
+
+First, we use public data to determine systemic issues in vulnerability assessments. The free-to-use tool will show differences in CVSS vectors for the same CVEs, analyze systemic problems in vulnerability assessment, show how PSIRT teams can use the tool to identify assessment issues in their own security advisories, and offers examples and procedures for closing that assessment gap.
+
+Then, we propose improving CVSS and CVE documentation for helping CNAs to improve the quality of their vulnerability assessment data submissions in public vulnerability databases.
+
+Finally, a discussion on how can all stakeholders in the vulnerability disclosure ecosystem can help to evolve actionable information in public vulnerability databases.
+
+This talk is a companion to the submission "Words Matter: Practical Ways to Improve CVE and Advisory Quality".
 
 ## The fractured ecosystem
 
-Data exists in many forms from many sources. The perceived unreliability, real or imagined, respresents mistrust in primary vendors.
+Data exists in many forms from many sources. The perceived unreliability, real or imagined, respresents mistrust in primary vendors. Further complicating the matter is multiple assessments performed by multiple organizations in different databases.
 
 Scanners and other vulnerability management vendors have stepped in. 
 
-How can we re-establish trust in primary sources? How can we help organizations manage this themselves?
+How can we re-establish trust in primary sources? How can we help organizations manage this themselves? The first step is driving better agreement between CNAs and databases.
 
-## Your Vendors Aren’t Lying: They Just Don’t Know
+## Your Vendors Aren’t Lying
 
-Vulnerability assessment versus asset mismatches
+We look at a broad set of vendor data and examine the common types of differences seen. What kinds of issues are systemic? Is there something that the data is telling us that is common across the industry? What conclusions can be drawn about the accuracy of CVSS assessments from various sources?
 
-## Vulnerability Databases
+Once we have identified common assessment mismatches, how can we begin to drive consistency?
 
-CVE completeness. 
+This data review will demonstrate data taken from single vendors as well as broad samples to identify common assessment mismatches.
 
-## Solutions
+## Improving Assessment Quality
 
-### Improving CVE descriptions
+### Words Matter: Improving CVE descriptions
 
 Transparency is important. Customers will second-guess data that isn't well explained. The description forms the basis of that trust. 
 
-More to come on this issue!
+See more in the talk "Words Matter: Practical Ways to Improve CVE and Advisory Quality" and accompanying white paper.
 
-### CVSS
+### The CVSS Base Score problem
+
+CVSS has become shorthand for patch prioritization. But this overstates risk. CVSS Threat and Environmental in the standard help. However, CVSS-BTE presents challenges and difficulty to do at scale.
 
 Vector maturity.
 
@@ -53,3 +72,7 @@ How can we bring together threat intelligence, EPSS, CISA KEV, and others in a s
 Can the CVE program include that data alongside CVE?
 
 Is NVD willing to include threat and environmenta?
+
+# Takeaways
+
+Explain impact assessments better, restore trust in vendor-provided assessments, and ultimately aid customers in making better decisions about assets in their environments.

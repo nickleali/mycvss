@@ -14,7 +14,7 @@ This talk will attempt to use public data to determine systemic issues in vulner
 
 As a call to action, the talk will solicit feedback on how we in the CVSS SIG specifically, and FIRST in general, can improve the fidelity of and trust in vulnerability assessment data in public vulnerability databases.
 
-This talk is a companion to Improving Human-Readable Vulnerability Descriptions.
+Words Matter: Practical Ways to Improve CVE and Advisory Quality 
 
 ## The Tool
 
