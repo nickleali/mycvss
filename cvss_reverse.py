@@ -84,7 +84,7 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
     if "UI:P" in line:
         v3_string = v3_string + "/UI:R"
     elif "UI:A" in line:
-        v3_string = v3_string + "/PR:L"
+        v3_string = v3_string + "/UI:R"
     else:
         v3_string = v3_string + "/UI:N"
 
@@ -162,8 +162,8 @@ with open(source_file, 'r') as source, open(destination_file, 'w') as destinatio
             v3_string = v3_string + "/E:H"
         elif "E:P" in line:
             v3_string = v3_string + "/E:P"
-        elif "E:X" in line:
-            v3_string = v3_string + "/E:X"
+        elif "E:U" in line:
+            v3_string = v3_string + "/E:U"
         else:
             v3_string = v3_string + "/E:X"
     except:
